@@ -5,24 +5,18 @@ const Hangul = require('hangul-js');
 // 한국어 텍스트 정규화
 const normalizeKoreanText = (text) => {
     if (!text) return '';
-    
-    // 1. 한글 분해 (초성, 중성, 종성)
-    const disassembled = Hangul.disassemble(text);
-    
-    // 2. 공백, 특수문자 제거
-    const cleaned = disassembled.join('').replace(/[^\w\s가-힣]/gi, '');
-    
-    // 3. 소문자 변환 및 공백 정리
-    return cleaned.toLowerCase().replace(/\s+/g, ' ').trim();
+    // 언더스코어 포함 모든 특수문자 제거
+    const cleaned = text.replace(/[^\w\s가-힣]|_/gi, '');
+    // 한글 정규화(분해 후 재조합)
+    const disassembled = Hangul.disassemble(cleaned);
+    const reassembled = Hangul.assemble(disassembled);
+    return reassembled.toLowerCase().replace(/\s+/g, ' ').trim();
 };
 
-// 업무 제목 키워드 추출
+// 업무 제목 키워드 추출 (한글/영어 모두 공백 기준 분리)
 const extractKeywords = (title) => {
     if (!title) return [];
-    
-    const tokens = natural.WordTokenizer().tokenize(title);
-    const stemmed = tokens.map(token => natural.PorterStemmer.stem(token));
-    return stemmed.filter(word => word.length > 1);
+    return title.split(/\s+/).filter(word => word.length > 1);
 };
 
 // 음성학적 유사도 계산 (한국어 특화)
@@ -57,6 +51,8 @@ const calculateSimilarity = (text1, text2) => {
 
 // 날짜 파싱 함수
 const parseDateFromText = (text) => {
+    if (!text) return null;
+    
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(tomorrow.getDate() + 1);
