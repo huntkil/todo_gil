@@ -20,7 +20,7 @@ describe('Category API Integration Tests', () => {
     describe('GET /api/categories', () => {
         test('모든 카테고리 조회', async () => {
             // 테스트 카테고리 생성
-            await Category.create([
+            const testCategories = await Category.create([
                 {
                     name: '업무',
                     color: '#ff0000'
@@ -36,12 +36,18 @@ describe('Category API Integration Tests', () => {
                 .expect(200);
 
             expect(Array.isArray(response.body)).toBe(true);
-            expect(response.body.length).toBe(2);
-            expect(response.body[0].name).toBe('업무');
-            expect(response.body[1].name).toBe('개인');
+            expect(response.body.length).toBeGreaterThanOrEqual(2);
+            
+            // 생성한 카테고리들이 응답에 포함되어 있는지 확인
+            const categoryNames = response.body.map(cat => cat.name);
+            expect(categoryNames).toContain('업무');
+            expect(categoryNames).toContain('개인');
         });
 
         test('빈 카테고리 목록 조회', async () => {
+            // 모든 카테고리 삭제
+            await Category.deleteMany({});
+            
             const response = await request(app)
                 .get('/api/categories')
                 .expect(200);

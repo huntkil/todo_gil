@@ -11,6 +11,12 @@ const app = express();
 // 데이터베이스 연결
 connectDB();
 
+// 스케줄러 서비스 시작 (테스트 환경에서는 비활성화)
+if (process.env.NODE_ENV !== 'test') {
+    const schedulerService = require('./services/schedulerService');
+    schedulerService.start();
+}
+
 // 미들웨어
 app.use(helmet());
 app.use(cors());
@@ -24,6 +30,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 라우터
 app.use('/api/tasks', require('./routes/tasks'));
 app.use('/api/categories', require('./routes/categories'));
+app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/calendar', require('./routes/calendar'));
 
 // 기본 라우트
 app.get('/', (req, res) => {
