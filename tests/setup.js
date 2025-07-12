@@ -1,8 +1,11 @@
+/* eslint-env jest */
 // 테스트 환경 설정
 process.env.NODE_ENV = 'test';
 
 // MongoDB 연결을 위한 환경 변수 설정
-process.env.MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/todo_gil_test_' + Date.now();
+process.env.MONGODB_URI =
+  process.env.MONGODB_URI ||
+  'mongodb://localhost:27017/todo_gil_test_' + Date.now();
 
 // JWT 시크릿 키 설정
 process.env.JWT_SECRET = 'test-secret-key';
@@ -16,30 +19,30 @@ process.env.GOOGLE_CLIENT_ID = 'test-client-id';
 process.env.GOOGLE_CLIENT_SECRET = 'test-client-secret';
 
 // 알림 서비스 모킹
-jest.mock('../services/notificationService', () => {
-    return require('./mocks/notificationService');
+jest.mock('../services/notificationService.js', () => {
+  return import('./mocks/notificationService.js');
 });
 
 // 캘린더 서비스 모킹
-jest.mock('../services/calendarService', () => {
-    return {
-        GoogleCalendarService: jest.fn().mockImplementation(() => ({
-            authenticate: jest.fn().mockResolvedValue(true),
-            getCalendars: jest.fn().mockResolvedValue([]),
-            createEvent: jest.fn().mockResolvedValue({ id: 'test-event-id' }),
-            updateEvent: jest.fn().mockResolvedValue(true),
-            deleteEvent: jest.fn().mockResolvedValue(true)
-        }))
-    };
+jest.mock('../services/calendarService.js', () => {
+  return {
+    GoogleCalendarService: jest.fn().mockImplementation(() => ({
+      authenticate: jest.fn().mockResolvedValue(true),
+      getCalendars: jest.fn().mockResolvedValue([]),
+      createEvent: jest.fn().mockResolvedValue({ id: 'test-event-id' }),
+      updateEvent: jest.fn().mockResolvedValue(true),
+      deleteEvent: jest.fn().mockResolvedValue(true),
+    })),
+  };
 });
 
 // 스케줄러 서비스 모킹
-jest.mock('../services/schedulerService', () => {
-    return jest.fn().mockImplementation(() => ({
-        start: jest.fn(),
-        stop: jest.fn()
-    }));
+jest.mock('../services/schedulerService.js', () => {
+  return jest.fn().mockImplementation(() => ({
+    start: jest.fn(),
+    stop: jest.fn(),
+  }));
 });
 
 // 글로벌 테스트 타임아웃 설정
-jest.setTimeout(10000); 
+jest.setTimeout(10000);

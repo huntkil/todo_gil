@@ -1,10 +1,15 @@
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import RealtimeNotificationStatus from "@/components/RealtimeNotificationStatus";
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm lg:flex">
-        <h1 className="text-4xl font-bold mb-8">Todo Gil - 업무 관리 도구</h1>
+        <div className="flex items-center justify-between w-full">
+          <h1 className="text-4xl font-bold mb-8">Todo Gil - 업무 관리 도구</h1>
+          <RealtimeNotificationStatus userId="default-user" />
+        </div>
       </div>
 
       <div className="relative flex place-items-center">
@@ -14,8 +19,15 @@ export default function Home() {
             효율적인 업무 관리를 시작해보세요
           </p>
           <div className="space-x-4">
-            <Button>업무 추가</Button>
-            <Button variant="outline">대시보드 보기</Button>
+            <Link href="/tasks">
+              <Button>업무 관리</Button>
+            </Link>
+            <Link href="/dashboard">
+              <Button variant="outline">대시보드 보기</Button>
+            </Link>
+            <Link href="/calendar">
+              <Button variant="outline">캘린더 보기</Button>
+            </Link>
           </div>
         </div>
       </div>

@@ -1,16 +1,17 @@
-const express = require('express');
+import express from 'express';
+import {
+  getAllTasks,
+  getTaskById,
+  createTask,
+  updateTask,
+  deleteTask,
+  updateProgress,
+  checkDuplicates,
+  getSuggestions,
+  getDashboardStats,
+} from '../controllers/taskController.js';
+
 const router = express.Router();
-const {
-    getAllTasks,
-    getTaskById,
-    createTask,
-    updateTask,
-    deleteTask,
-    updateProgress,
-    checkDuplicates,
-    getSuggestions,
-    getDashboardStats
-} = require('../controllers/taskController');
 
 // 모든 업무 조회
 router.get('/', getAllTasks);
@@ -39,4 +40,4 @@ router.delete('/:id', deleteTask);
 // 진행률 업데이트
 router.patch('/:id/progress', updateProgress);
 
-module.exports = router; 
+export default router;

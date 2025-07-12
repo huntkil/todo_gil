@@ -13,30 +13,34 @@ Node.js 기반의 개인 업무 관리 도구입니다. 자연어 입력, 실시
 - 🏷️ **카테고리 관리**: 체계적인 업무 분류
 - 🔍 **검색 및 필터링**: 효율적인 업무 검색
 - ⏰ **스케줄러**: 자동 마감일 리마인더 및 일일 요약
+- 🎯 **실시간 알림**: WebSocket 기반 실시간 알림 시스템
 
 ## 🛠️ 기술 스택
 
 ### 백엔드
-- **Node.js** + **Express.js**
+- **Node.js** + **Express.js** (ES 모듈)
 - **MongoDB** (Mongoose ODM)
 - **JWT Authentication**
 - **Nodemailer** (이메일 알림)
 - **Slack Webhook** (Slack 알림)
 - **Google Calendar API** (캘린더 연동)
 - **node-cron** (스케줄러)
-- **Jest** (테스트)
+- **Jest** (테스트 - ES 모듈 지원)
+- **ESLint** + **Prettier** (코드 품질)
 
 ### 프론트엔드
-- **HTML5** + **CSS3** + **JavaScript**
-- **Bootstrap 5** (UI 프레임워크)
+- **Next.js 13+** (App Router)
+- **TypeScript**
+- **Tailwind CSS**
+- **ShadCN UI** (컴포넌트 시스템)
+- **Lucide React** (아이콘)
+- **Socket.io** (실시간 통신)
 - **Chart.js** (차트 시각화)
-- **Font Awesome** (아이콘)
-- **Vanilla JS** (상태 관리)
 
 ## 📦 설치 및 실행
 
 ### 사전 요구사항
-- Node.js 16.0.0 이상
+- Node.js 18.0.0 이상
 - MongoDB 4.4.0 이상
 
 ### 설치 과정
@@ -45,8 +49,13 @@ Node.js 기반의 개인 업무 관리 도구입니다. 자연어 입력, 실시
 git clone https://github.com/huntkil/todo_gil.git
 cd todo_gil
 
-# 의존성 설치
+# 백엔드 의존성 설치
 npm install
+
+# 프론트엔드 의존성 설치
+cd frontend
+npm install
+cd ..
 
 # 환경 변수 설정
 cp env.example .env
@@ -55,14 +64,18 @@ cp env.example .env
 # MongoDB 시작
 brew services start mongodb-community
 
-# 개발 서버 실행
+# 개발 서버 실행 (백엔드)
+npm run dev
+
+# 새 터미널에서 프론트엔드 실행
+cd frontend
 npm run dev
 ```
 
 ### 환경 변수 설정
 ```env
 # 서버 설정
-PORT=3000
+PORT=3001
 NODE_ENV=development
 
 # 데이터베이스
@@ -82,7 +95,7 @@ SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
 # Google Calendar 연동 (선택사항)
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
-GOOGLE_REDIRECT_URI=http://localhost:3000/api/calendar/auth/google/callback
+GOOGLE_REDIRECT_URI=http://localhost:3001/api/calendar/auth/google/callback
 ```
 
 ## 🎯 사용 방법
@@ -98,7 +111,7 @@ GOOGLE_REDIRECT_URI=http://localhost:3000/api/calendar/auth/google/callback
 1. **알림 설정**: 헤더의 "알림" 버튼 클릭
 2. **채널 설정**: 이메일, Slack, 푸시 알림 각각 설정
 3. **알림 확인**: 벨 아이콘 클릭하여 알림 목록 확인
-4. **실시간 알림**: 30초마다 새 알림 자동 체크
+4. **실시간 알림**: WebSocket을 통한 실시간 알림 수신
 
 ### 캘린더 연동
 1. **Google Calendar 연결**: 헤더의 "캘린더" 버튼 클릭
@@ -109,7 +122,7 @@ GOOGLE_REDIRECT_URI=http://localhost:3000/api/calendar/auth/google/callback
 ## 🧪 테스트
 
 ```bash
-# 전체 테스트 실행
+# 전체 테스트 실행 (ES 모듈 지원)
 npm test
 
 # 테스트 커버리지 확인
@@ -117,6 +130,12 @@ npm run test:coverage
 
 # 특정 테스트 파일 실행
 npm test -- tests/utils/textSimilarity.test.js
+
+# 코드 품질 검사
+npm run lint
+
+# 코드 포맷팅
+npm run format
 ```
 
 ## 📚 API 문서
@@ -169,6 +188,10 @@ npm run lint
 
 # 코드 포맷팅
 npm run format
+
+# 타입 체크 (프론트엔드)
+cd frontend
+npm run type-check
 ```
 
 ### 데이터베이스 초기화
@@ -180,7 +203,7 @@ npm run init-db
 ## 📈 프로젝트 상태
 
 ### ✅ 완료된 기능
-- [x] 기본 업무 CRUD
+- [x] 기본 업무 CRUD (ES 모듈)
 - [x] 카테고리 관리
 - [x] 중복 감지 시스템
 - [x] 대시보드 및 통계
@@ -189,13 +212,18 @@ npm run init-db
 - [x] 알림 시스템 (이메일, Slack, 푸시)
 - [x] Google Calendar 연동
 - [x] 스케줄러 서비스
-- [x] 프론트엔드 UI
+- [x] Next.js 13+ 프론트엔드
+- [x] TypeScript 지원
+- [x] ShadCN UI 컴포넌트
+- [x] 실시간 알림 (WebSocket)
 - [x] 테스트 커버리지 (34개 테스트 통과)
+- [x] ESLint + Prettier 설정
+- [x] Jest ES 모듈 지원
 
 ### 🚧 진행 중인 기능
-- [ ] 실시간 알림 (WebSocket)
 - [ ] 브라우저 푸시 알림
 - [ ] Outlook Calendar 연동
+- [ ] 모바일 반응형 최적화
 
 ### 📋 향후 계획
 - [ ] 다중 사용자 지원
@@ -210,7 +238,28 @@ npm run init-db
 - **API 엔드포인트**: 20+ 개
 - **지원 언어**: 한국어 최적화
 - **반응형 디자인**: 모바일/데스크톱 지원
-- **실시간 기능**: 알림, 동기화
+- **실시간 기능**: WebSocket 기반 알림, 동기화
+- **코드 품질**: ESLint + Prettier 적용
+- **모던 스택**: ES 모듈, Next.js 13+, TypeScript
+
+## 🚀 최근 업데이트
+
+### ES 모듈 변환 완료
+- 모든 백엔드 파일을 CommonJS에서 ES 모듈로 변환
+- Jest 설정 업데이트로 ES 모듈 테스트 지원
+- ESLint 설정 최적화
+
+### 프론트엔드 현대화
+- Next.js 13+ App Router 구조 적용
+- TypeScript 지원 추가
+- ShadCN UI 컴포넌트 시스템 도입
+- 실시간 알림 시스템 구현
+
+### 코드 품질 향상
+- ESLint + Prettier 설정 완료
+- 사용하지 않는 변수 제거
+- 테스트 파일 확장자 통일
+- 34개 테스트 통과 확인
 
 ## 🤝 기여하기
 

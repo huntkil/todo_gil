@@ -1,13 +1,14 @@
-const express = require('express');
+import express from 'express';
+import {
+  getAllCategories,
+  getCategoryById,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+  getCategoryStats,
+} from '../controllers/categoryController.js';
+
 const router = express.Router();
-const {
-    getAllCategories,
-    getCategoryById,
-    createCategory,
-    updateCategory,
-    deleteCategory,
-    getCategoryStats
-} = require('../controllers/categoryController');
 
 // 모든 카테고리 조회
 router.get('/', getAllCategories);
@@ -27,4 +28,4 @@ router.put('/:id', updateCategory);
 // 카테고리 삭제
 router.delete('/:id', deleteCategory);
 
-module.exports = router; 
+export default router;

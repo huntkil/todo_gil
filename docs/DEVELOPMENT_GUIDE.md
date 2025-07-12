@@ -5,47 +5,165 @@
 ### 백엔드 아키텍처
 
 ```
-src/
+todo_gil/
 ├── 📁 config/           # 설정 파일
-│   ├── database.js     # MongoDB 연결 설정
-│   └── environment.js  # 환경 변수 관리
-├── 📁 models/          # Mongoose 모델
+│   └── database.js     # MongoDB 연결 설정
+├── 📁 models/          # Mongoose 모델 (ES 모듈)
 │   ├── Task.js         # 업무 모델
 │   ├── Category.js     # 카테고리 모델
 │   ├── Notification.js # 알림 모델
+│   ├── TaskHistory.js  # 업무 히스토리 모델
 │   └── User.js         # 사용자 모델
-├── 📁 routes/          # Express 라우터
+├── 📁 routes/          # Express 라우터 (ES 모듈)
 │   ├── tasks.js        # 업무 API
 │   ├── categories.js   # 카테고리 API
 │   ├── notifications.js # 알림 API
 │   └── calendar.js     # 캘린더 API
-├── 📁 services/        # 비즈니스 로직
+├── 📁 services/        # 비즈니스 로직 (ES 모듈)
 │   ├── notificationService.js # 알림 서비스
 │   ├── calendarService.js     # 캘린더 서비스
 │   └── schedulerService.js    # 스케줄러 서비스
-├── 📁 utils/           # 유틸리티 함수
-│   ├── textSimilarity.js # 텍스트 유사도 계산
-│   └── dateUtils.js     # 날짜 처리
-└── app.js              # Express 앱 설정
+├── 📁 utils/           # 유틸리티 함수 (ES 모듈)
+│   └── textSimilarity.js # 텍스트 유사도 계산
+├── 📁 tests/           # 테스트 파일
+│   ├── 📁 integration/ # 통합 테스트
+│   ├── 📁 mocks/       # 모킹 파일
+│   └── setup.js        # 테스트 설정
+├── 📁 frontend/        # Next.js 프론트엔드
+│   ├── 📁 components/  # React 컴포넌트
+│   ├── 📁 src/app/     # Next.js 13+ App Router
+│   └── 📁 types/       # TypeScript 타입 정의
+├── server.js           # Express 앱 설정 (ES 모듈)
+├── app.js              # 앱 초기화
+├── jest.config.js      # Jest 설정
+└── eslint.config.mjs   # ESLint 설정
 ```
 
-### 프론트엔드 구조
+### 프론트엔드 구조 (Next.js 13+)
 
 ```
-public/
-├── 📁 css/             # 스타일시트
-│   ├── style.css       # 메인 스타일
-│   └── notifications.css # 알림 UI 스타일
-├── 📁 js/              # JavaScript
-│   ├── app.js          # 메인 애플리케이션
-│   ├── notifications.js # 알림 관리
-│   └── calendar.js     # 캘린더 연동
-└── index.html          # 메인 HTML
+frontend/
+├── 📁 components/      # React 컴포넌트
+│   ├── 📁 ui/         # ShadCN UI 컴포넌트
+│   ├── NotificationStatus.tsx
+│   ├── RealtimeNotificationProvider.tsx
+│   └── RealtimeNotificationStatus.tsx
+├── 📁 src/app/        # Next.js App Router
+│   ├── 📁 calendar/   # 캘린더 페이지
+│   ├── 📁 dashboard/  # 대시보드 페이지
+│   ├── 📁 notifications/ # 알림 페이지
+│   ├── 📁 tasks/      # 업무 관리 페이지
+│   ├── layout.tsx     # 루트 레이아웃
+│   └── page.tsx       # 홈페이지
+├── 📁 lib/            # 유틸리티 및 설정
+│   ├── api.ts         # API 클라이언트
+│   ├── calendar.ts    # 캘린더 유틸리티
+│   ├── socket.ts      # WebSocket 설정
+│   └── utils.ts       # 공통 유틸리티
+├── 📁 types/          # TypeScript 타입 정의
+│   ├── notification.ts
+│   └── task.ts
+└── components.json    # ShadCN 설정
 ```
 
 ## 🔧 개발 환경 설정
 
-### 1. VS Code 확장 프로그램
+### 1. ES 모듈 설정
+```json
+// package.json
+{
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  }
+}
+```
+
+### 2. ESLint 설정 (ES 모듈)
+```javascript
+// eslint.config.mjs
+export default [
+  {
+    files: ['**/*.js', '**/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+      globals: {
+        console: 'readonly',
+        process: 'readonly',
+        Buffer: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly'
+      }
+    },
+    env: {
+      node: true,
+      es2022: true
+    },
+    rules: {
+      'no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }],
+      'no-console': 'warn',
+      'prefer-const': 'error',
+      'no-var': 'error'
+    }
+  },
+  {
+    files: ['**/*.test.js', '**/*.test.mjs'],
+    languageOptions: {
+      globals: {
+        describe: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        jest: 'readonly'
+      }
+    },
+    env: {
+      jest: true
+    }
+  }
+];
+```
+
+### 3. Jest 설정 (ES 모듈 지원)
+```javascript
+// jest.config.js
+export default {
+  preset: 'default',
+  extensionsToTreatAsEsm: ['.js'],
+  globals: {
+    'ts-jest': {
+      useESM: true
+    }
+  },
+  transform: {
+    '^.+\\.js$': 'babel-jest'
+  },
+  testEnvironment: 'node',
+  testMatch: ['**/tests/**/*.test.js'],
+  collectCoverageFrom: [
+    'models/**/*.js',
+    'services/**/*.js',
+    'utils/**/*.js',
+    '!**/node_modules/**'
+  ],
+  coverageThreshold: {
+    global: {
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80
+    }
+  }
+};
+```
+
+### 4. VS Code 확장 프로그램
 ```json
 {
   "recommendations": [
@@ -53,63 +171,39 @@ public/
     "esbenp.prettier-vscode",
     "ms-vscode.vscode-typescript-next",
     "bradlc.vscode-tailwindcss",
-    "ms-mssql.mssql"
+    "ms-mssql.mssql",
+    "ms-vscode.vscode-json"
   ]
-}
-```
-
-### 2. ESLint 설정
-```javascript
-// .eslintrc.js
-module.exports = {
-  env: {
-    browser: true,
-    es2021: true,
-    node: true,
-    jest: true
-  },
-  extends: ['eslint:recommended'],
-  parserOptions: {
-    ecmaVersion: 12,
-    sourceType: 'module'
-  },
-  rules: {
-    'no-unused-vars': 'warn',
-    'no-console': 'warn'
-  },
-  globals: {
-    bootstrap: 'readonly'
-  }
-};
-```
-
-### 3. Git Hooks 설정
-```bash
-# pre-commit hook
-npm install --save-dev husky lint-staged
-
-# package.json에 추가
-{
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
-  },
-  "lint-staged": {
-    "*.js": ["eslint --fix", "git add"]
-  }
 }
 ```
 
 ## 📝 코딩 컨벤션
 
-### 1. 파일 명명 규칙
+### 1. ES 모듈 import/export
+```javascript
+// ✅ 올바른 ES 모듈 사용
+import mongoose from 'mongoose';
+import { Task } from '../models/Task.js';
+import { calculateSimilarity } from '../utils/textSimilarity.js';
+
+export const createTask = async (taskData) => {
+  // 구현
+};
+
+// ❌ CommonJS 사용 금지
+const mongoose = require('mongoose');
+const Task = require('../models/Task');
+module.exports = { createTask };
+```
+
+### 2. 파일 명명 규칙
 - **파일명**: camelCase (예: `textSimilarity.js`)
 - **클래스명**: PascalCase (예: `NotificationService`)
 - **함수명**: camelCase (예: `calculateSimilarity`)
 - **상수명**: UPPER_SNAKE_CASE (예: `MAX_RETRY_COUNT`)
+- **테스트 파일**: `.test.js` 확장자 사용
 
-### 2. 코드 스타일
+### 3. 코드 스타일
 ```javascript
 // ✅ 좋은 예시
 const calculateTaskSimilarity = (task1, task2) => {
@@ -127,7 +221,7 @@ const calcSim = (t1, t2) => {
 };
 ```
 
-### 3. 주석 작성 규칙
+### 4. 주석 작성 규칙
 ```javascript
 /**
  * 텍스트 유사도를 계산합니다.
@@ -163,7 +257,7 @@ function normalizeText(text) {
 
 #### 유사도 계산
 ```javascript
-function calculateSimilarity(text1, text2) {
+export function calculateSimilarity(text1, text2) {
   const tokens1 = tokenize(text1);
   const tokens2 = tokenize(text2);
   
@@ -180,7 +274,7 @@ function calculateSimilarity(text1, text2) {
 #### 알림 서비스 구조
 ```javascript
 // services/notificationService.js
-class NotificationService {
+export class NotificationService {
   constructor() {
     this.emailTransporter = this.createEmailTransporter();
     this.slackWebhook = process.env.SLACK_WEBHOOK_URL;
@@ -206,7 +300,10 @@ class NotificationService {
 #### 스케줄러 서비스
 ```javascript
 // services/schedulerService.js
-class SchedulerService {
+import cron from 'node-cron';
+import { NotificationService } from './notificationService.js';
+
+export class SchedulerService {
   constructor() {
     this.notificationService = new NotificationService();
     this.calendarService = new GoogleCalendarService();
@@ -231,7 +328,9 @@ class SchedulerService {
 #### Google Calendar 서비스
 ```javascript
 // services/calendarService.js
-class GoogleCalendarService {
+import { google } from 'googleapis';
+
+export class GoogleCalendarService {
   constructor() {
     this.oauth2Client = new google.auth.OAuth2(
       process.env.GOOGLE_CLIENT_ID,
@@ -261,6 +360,8 @@ class GoogleCalendarService {
 ### 1. 단위 테스트
 ```javascript
 // tests/utils/textSimilarity.test.js
+import { calculateSimilarity } from '../../utils/textSimilarity.js';
+
 describe('Text Similarity', () => {
   test('동일한 텍스트는 100% 유사도', () => {
     const similarity = calculateSimilarity('회의 준비', '회의 준비');
@@ -277,7 +378,15 @@ describe('Text Similarity', () => {
 ### 2. 통합 테스트
 ```javascript
 // tests/integration/tasks.test.js
+import request from 'supertest';
+import { app } from '../../app.js';
+import { Task } from '../../models/Task.js';
+
 describe('Task API', () => {
+  beforeEach(async () => {
+    await Task.deleteMany({});
+  });
+  
   test('업무 생성 시 중복 감지', async () => {
     // 첫 번째 업무 생성
     await request(app)
@@ -298,7 +407,7 @@ describe('Task API', () => {
 ### 3. 모킹 전략
 ```javascript
 // tests/mocks/notificationService.js
-class MockNotificationService {
+export class MockNotificationService {
   async sendEmail(to, subject, message) {
     console.log(`[MOCK] 이메일 전송: ${to} - ${subject}`);
     return { success: true };
@@ -306,8 +415,10 @@ class MockNotificationService {
 }
 
 // 테스트에서 사용
-jest.mock('../services/notificationService', () => {
-  return require('./mocks/notificationService');
+import { MockNotificationService } from './mocks/notificationService.js';
+
+jest.mock('../services/notificationService.js', () => {
+  return { NotificationService: MockNotificationService };
 });
 ```
 
@@ -316,6 +427,8 @@ jest.mock('../services/notificationService', () => {
 ### Task 모델
 ```javascript
 // models/Task.js
+import mongoose from 'mongoose';
+
 const taskSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -373,11 +486,15 @@ const taskSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+
+export const Task = mongoose.model('Task', taskSchema);
 ```
 
 ### Notification 모델
 ```javascript
 // models/Notification.js
+import mongoose from 'mongoose';
+
 const notificationSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -417,6 +534,8 @@ const notificationSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+
+export const Notification = mongoose.model('Notification', notificationSchema);
 ```
 
 ## 🚀 성능 최적화
@@ -437,7 +556,7 @@ notificationSchema.index({ scheduledAt: 1 });
 ### 2. 캐싱 전략
 ```javascript
 // Redis 캐싱 예시
-const redis = require('redis');
+import redis from 'redis';
 const client = redis.createClient();
 
 async function getCachedTasks(userId) {
@@ -476,7 +595,7 @@ async function createTask(taskData) {
 ### 1. 입력 검증
 ```javascript
 // Joi를 사용한 스키마 검증
-const Joi = require('joi');
+import Joi from 'joi';
 
 const taskSchema = Joi.object({
   title: Joi.string().min(1).max(200).required(),
@@ -489,20 +608,12 @@ const taskSchema = Joi.object({
 });
 ```
 
-### 2. SQL 인젝션 방지
-```javascript
-// Mongoose는 자동으로 SQL 인젝션을 방지
-// 하지만 사용자 입력은 항상 검증해야 함
-const sanitizeInput = (input) => {
-  return input.replace(/[<>]/g, '');
-};
-```
-
-### 3. 환경 변수 보안
+### 2. 환경 변수 보안
 ```javascript
 // .env 파일은 절대 Git에 커밋하지 않음
 // 프로덕션에서는 별도 관리
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
 const requiredEnvVars = [
   'MONGODB_URI',
@@ -521,7 +632,7 @@ requiredEnvVars.forEach(envVar => {
 ### 1. 로깅 설정
 ```javascript
 // winston 로거 설정
-const winston = require('winston');
+import winston from 'winston';
 
 const logger = winston.createLogger({
   level: 'info',
@@ -578,6 +689,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
+        with:
+          node-version: '18'
       - run: npm ci
       - run: npm test
       - run: npm run lint
@@ -607,5 +720,30 @@ const config = {
   }
 };
 
-module.exports = config[process.env.NODE_ENV || 'development'];
-``` 
+export default config[process.env.NODE_ENV || 'development'];
+```
+
+## 🚀 최근 업데이트 사항
+
+### ES 모듈 변환 완료
+- 모든 백엔드 파일을 CommonJS에서 ES 모듈로 변환
+- `require()` → `import` 구문 변경
+- `module.exports` → `export` 구문 변경
+- Jest 설정 업데이트로 ES 모듈 테스트 지원
+
+### 코드 품질 개선
+- ESLint 설정 최적화
+- Prettier 포맷팅 적용
+- 사용하지 않는 변수 제거
+- 테스트 파일 확장자 통일 (`.test.js`)
+
+### 프론트엔드 현대화
+- Next.js 13+ App Router 구조
+- TypeScript 지원
+- ShadCN UI 컴포넌트 시스템
+- 실시간 알림 시스템 구현
+
+### 테스트 커버리지 향상
+- 34개 테스트 통과
+- 통합 테스트 및 단위 테스트 완비
+- 모킹 전략 개선 
